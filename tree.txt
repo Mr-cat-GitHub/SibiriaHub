@@ -1,0 +1,10 @@
+project/
+│
+├── main.py                 # Запуск основного окна приложения
+├── models.py               # Модели базы данных
+├── widgets/
+│   ├── main_window.py      # Основное окно
+│   ├── book_table_widget.py# Таблица для отображения книг
+│   └── input_form_widget.py# Форма ввода для добавления и редактирования книг
+└── data/
+    └── library.db          # База данных SQLite
