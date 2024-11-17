@@ -160,8 +160,10 @@ class MainWindow(QMainWindow):
 
     def open_theme_selector(self):
         """Открывает виджет выбора темы."""
-        if self.theme_selector_widget is None:
+        if not hasattr(self, "theme_selector_widget") or self.theme_selector_widget is None:
             self.theme_selector_widget = ThemeSelectorWidget(self)
+            self.theme_selector_widget.show()
+        else:
             self.theme_selector_widget.show()
 
     def apply_saved_theme(self):
@@ -180,8 +182,9 @@ class MainWindow(QMainWindow):
 
     def close_theme_selector(self):
         """Закрывает виджет выбора темы, если он открыт."""
-        if hasattr(self, 'theme_selector_widget') and self.theme_selector_widget is not None:
+        if hasattr(self, "theme_selector_widget") and self.theme_selector_widget is not None:
             self.theme_selector_widget.close()
             self.theme_selector_widget.deleteLater()
             self.theme_selector_widget = None
+
 

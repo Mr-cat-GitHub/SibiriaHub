@@ -1,12 +1,12 @@
-from PyQt6.QtCore import QSettings
-from PyQt6.QtWidgets import QVBoxLayout, QLabel, QPushButton, QWidget
+from PyQt6.QtCore import QSettings, Qt
+from PyQt6.QtWidgets import QVBoxLayout, QLabel, QPushButton, QWidget, QMessageBox
 
 
 class ThemeSelectorWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Выбор темы")
-        self.setGeometry(200, 200, 300, 200)
+        self.setGeometry(200, 200, 400, 300)  # Размер окна
 
         # Сохраняем настройки тем
         self.settings = QSettings("SibirHub", "ThemeSettings")
@@ -17,38 +17,35 @@ class ThemeSelectorWidget(QWidget):
     def init_ui(self):
         """Инициализация интерфейса виджета выбора темы."""
         layout = QVBoxLayout()
+        layout.setSpacing(10)  # Отступы между элементами
+        layout.setAlignment(Qt.AlignmentFlag.AlignTop)  # Выравнивание по верхнему краю
 
         # Заголовок
         title_label = QLabel("Выберите тему:")
+        title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title_label)
 
         # Кнопки выбора темы
         buttons_layout = QVBoxLayout()
 
-        # Тёмная тема
-        dark_theme_button = QPushButton("Тёмная тема")
-        dark_theme_button.clicked.connect(lambda: self.apply_theme("dark"))
-        buttons_layout.addWidget(dark_theme_button)
+        themes = {
+            "Тёмная тема": "dark",
+            "Светлая тема": "light",
+            "Розовая светлая тема": "pink_light",
+            "Сумеречная ночь": "twilight"
+        }
 
-        # Светлая тема
-        light_theme_button = QPushButton("Светлая тема")
-        light_theme_button.clicked.connect(lambda: self.apply_theme("light"))
-        buttons_layout.addWidget(light_theme_button)
-
-        # Светлая розовая тема
-        pink_light_button = QPushButton("Розовая светлая тема")
-        pink_light_button.clicked.connect(lambda: self.apply_theme("pink_light"))
-        buttons_layout.addWidget(pink_light_button)
-
-        # Тёмная розовая тема
-        twilight_button = QPushButton("Сумеречная ночь")
-        twilight_button.clicked.connect(lambda: self.apply_theme("twilight"))
-        buttons_layout.addWidget(twilight_button)
+        for label, theme_key in themes.items():
+            button = QPushButton(label)
+            button.setFixedHeight(40)  # Фиксированная высота кнопок
+            button.clicked.connect(lambda checked, key=theme_key: self.apply_theme(key))
+            buttons_layout.addWidget(button)
 
         layout.addLayout(buttons_layout)
 
         # Кнопка "Назад"
         back_button = QPushButton("Назад")
+        back_button.setFixedHeight(40)
         back_button.clicked.connect(self.go_back)
         layout.addWidget(back_button)
 
@@ -60,17 +57,25 @@ class ThemeSelectorWidget(QWidget):
             "dark": "css/dark_theme.css",
             "light": "css/light_theme.css",
             "pink_light": "css/pink_light_theme.css",
-            "twilight": "css/twilight_theme.css",  # Проверьте путь
+            "twilight": "css/twilight_theme.css",
         }
 
         if theme in theme_files:
             file_path = theme_files[theme]
-            self.parent().load_css(file_path)
-            self.settings.setValue("theme", theme)
-            print(f"Тема {theme} успешно применена.")  # Отладочный вывод
+            if self.parent() and hasattr(self.parent(), "load_css"):
+                self.parent().load_css(file_path)
+                self.settings.setValue("theme", theme)
+                # QMessageBox.information(self, "Тема применена", f"Тема '{theme}' успешно применена.")
+                print(f"Тема {theme} успешно применена.")  # Отладочный вывод
+            else:
+                QMessageBox.warning(self, "Ошибка", "Родительский виджет не поддерживает загрузку CSS.")
         else:
+            QMessageBox.critical(self, "Ошибка", f"Тема '{theme}' не найдена.")
             print(f"Ошибка: тема {theme} не найдена.")
 
     def go_back(self):
         """Возвращает пользователя в главное окно."""
-        self.parent().init_main_interface()
+        if self.parent() and hasattr(self.parent(), "close_theme_selector"):
+            self.parent().close_theme_selector()  # Закрываем текущий виджет
+            self.parent().init_main_interface()  # Возвращаемся к главному интерфейсу
+
