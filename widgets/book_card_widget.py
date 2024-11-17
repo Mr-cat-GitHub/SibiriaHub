@@ -14,38 +14,10 @@ class BookCardWidget(QWidget):
         layout.setSpacing(10)
         layout.setContentsMargins(15, 15, 15, 15)
 
-        # Стили для карточки
-        self.setStyleSheet("""
-            QWidget {
-                background-color: #2A2A2E;
-                border-radius: 10px;
-                border: 1px solid #3E3E42;
-                padding: 10px;
-                width: 25px;  /* Фиксированная ширина */
-                height: 25px; /* Фиксированная высота */
-            }
-            QLabel {
-                color: #FFFFFF;
-                font-size: 14px;
-                font-weight: bold;
-            }
-            QPushButton {
-                background-color: #3A3A3F;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                padding: 8px 12px;
-                font-size: 12px;
-                width: 25px; /* Ширина кнопок */
-            }
-            QPushButton:hover {
-                background-color: #4A4A4F;
-            }
-        """)
-
         # Заголовок книги
-        title_label = QLabel(f"Title: {book.title}")
-        title_label.setFont(QFont("Arial", 12))
+        title_label = QLabel(book.title)
+        title_label.setObjectName("title")  # Для использования отдельного стиля
+        title_label.setFont(QFont("Arial", 14, QFont.Weight.Bold))
         layout.addWidget(title_label)
 
         # Автор
@@ -92,3 +64,12 @@ class BookCardWidget(QWidget):
                 session.delete(book)
                 session.commit()
                 self.parent.refresh_cards()  # Обновляем карточки после удаления
+
+    def load_stylesheet(self):
+        """Загружает СSS стиль из файла и применяет его ко всему приложению."""
+        try:
+            with open("style.сss", "r") as file:
+                stylesheet = file.read()
+                self.setStyleSheet(stylesheet)
+        except FileNotFoundError:
+            print("СSS файл не найден. Убедитесь, что style.сss находится в корневой папке.")
