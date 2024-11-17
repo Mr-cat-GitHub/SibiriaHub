@@ -12,6 +12,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.user = None
+        self.load_stylesheet()
         self.init_auth_interface()
 
     def init_auth_interface(self):
@@ -141,3 +142,12 @@ class MainWindow(QMainWindow):
     def go_back(self):
         """Возвращает пользователя к основному интерфейсу."""
         self.parent.init_main_interface()  # Замените init_ui на init_main_interface
+
+    def load_stylesheet(self):
+        """Загружает CSS из файла и применяет к приложению."""
+        try:
+            with open("style.css", "r") as file:
+                stylesheet = file.read()
+                self.setStyleSheet(stylesheet)
+        except FileNotFoundError:
+            print("CSS файл не найден.")
