@@ -19,6 +19,7 @@ class MainWindow(QMainWindow):
         # self.load_css()
         self.apply_saved_theme()
         self.init_auth_interface()
+        self.theme_selector_widget = None  # Инициализация атрибута
 
     def init_auth_interface(self):
         """Отображает интерфейс авторизации."""
@@ -113,9 +114,7 @@ class MainWindow(QMainWindow):
 
     def show_profile(self):
         """Открывает виджет профиля."""
-        if self.user is None:
-            QMessageBox.warning(self, "Ошибка", "Пользователь не авторизован.")
-            return
+        self.close_theme_selector()  # Закрыть селектор тем, если он открыт
         profile_widget = ProfileWidget(self.user, self)
         self.setCentralWidget(profile_widget)
 
@@ -160,9 +159,10 @@ class MainWindow(QMainWindow):
             print(f"Ошибка загрузки CSS: {e}")
 
     def open_theme_selector(self):
-        """Открывает окно выбора темы."""
-        theme_selector = ThemeSelectorWidget(self)
-        theme_selector.show()
+        """Открывает виджет выбора темы."""
+        if self.theme_selector_widget is None:
+            self.theme_selector_widget = ThemeSelectorWidget(self)
+            self.theme_selector_widget.show()
 
     def apply_saved_theme(self):
         """Применяет сохранённую тему при запуске."""
@@ -177,3 +177,11 @@ class MainWindow(QMainWindow):
 
         if saved_theme in theme_files:
             self.load_css(theme_files[saved_theme])
+
+    def close_theme_selector(self):
+        """Закрывает виджет выбора темы, если он открыт."""
+        if hasattr(self, 'theme_selector_widget') and self.theme_selector_widget is not None:
+            self.theme_selector_widget.close()
+            self.theme_selector_widget.deleteLater()
+            self.theme_selector_widget = None
+
