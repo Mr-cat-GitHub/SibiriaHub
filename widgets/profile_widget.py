@@ -1,5 +1,7 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QMessageBox, QLineEdit
-from models import Profile, create_user_session
+import csv
+
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QMessageBox, QLineEdit, QFileDialog
+from models import Profile, create_user_session, Book
 from werkzeug.security import generate_password_hash
 import os
 from PyQt6.QtWidgets import QMessageBox
@@ -62,6 +64,15 @@ class ProfileWidget(QWidget):
         go_back_button.clicked.connect(self.go_back)
         layout.addWidget(go_back_button)
 
+        # Кнопка для экспорта
+        export_button = QPushButton("Export to CSV")
+        export_button.clicked.connect(self.export_to_csv)
+        layout.addWidget(export_button)
+
+        # Кнопка для импорта
+        import_button = QPushButton("Import from CSV")
+        import_button.clicked.connect(self.import_from_csv)
+        layout.addWidget(import_button)
         self.setLayout(layout)
 
     def change_username(self):
@@ -139,9 +150,63 @@ class ProfileWidget(QWidget):
         else:
             QMessageBox.warning(self, "Error", "Failed to change the password. Please try again.")
 
+    def export_to_csv(self):
+        """Экспорт данных в CSV."""
+        file_path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Save CSV File",
+            "",
+            "CSV Files (*.csv);;All Files (*)"
+        )
+
+        if not file_path:
+            return  # Пользователь отменил сохранение
+
+        try:
+            session = create_user_session(self.user.username)
+            books = session.query(Book).filter_by(user_id=self.user.id).all()
+
+            with open(file_path, mode='w', newline='', encoding='utf-8') as file:
+                writer = csv.writer(file)
+                writer.writerow(["ID", "Title", "Author", "Year"])  # Заголовки
+                for book in books:
+                    writer.writerow([book.id, book.title, book.author, book.year])
+
+            QMessageBox.information(self, "Success", f"Data exported to {file_path}")
+        except Exception as e:
+            QMessageBox.warning(self, "Error", f"Failed to export data: {str(e)}")
+
+    def import_from_csv(self):
+        """Импорт данных из CSV."""
+        file_path, _ = QFileDialog.getOpenFileName(
+            self,
+            "Open CSV File",
+            "",
+            "CSV Files (*.csv);;All Files (*)"
+        )
+
+        if not file_path:
+            return  # Пользователь отменил выбор файла
+
+        try:
+            session = create_user_session(self.user.username)
+
+            with open(file_path, mode='r', encoding='utf-8') as file:
+                reader = csv.reader(file)
+                next(reader)  # Пропустить заголовок
+                for row in reader:
+                    title, author, year = row[1], row[2], int(row[3])
+                    new_book = Book(title=title, author=author, year=year, user_id=self.user.id)
+                    session.add(new_book)
+
+            session.commit()
+            QMessageBox.information(self, "Success", "Data imported successfully.")
+        except Exception as e:
+            QMessageBox.warning(self, "Error", f"Failed to import data: {str(e)}")
+
     def go_back(self):
         """Возвращает пользователя к основному интерфейсу."""
         if hasattr(self.parent, 'init_main_interface'):
             self.parent.init_main_interface()
         else:
-            QMessageBox.warning(self, "Ошибка", "Не удалось вернуться к основному интерфейсу.")
+            QMessageBox.warning(self, "Error", "Unable to return to main interface.")

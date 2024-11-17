@@ -1,4 +1,7 @@
-from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QPushButton, QScrollArea, QHBoxLayout, QLineEdit, QMessageBox
+import csv
+
+from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QPushButton, QScrollArea, QHBoxLayout, QLineEdit, \
+    QMessageBox, QFileDialog
 from PyQt6.QtCore import Qt
 from models import create_user_session, Book
 from widgets.auth_widget import AuthWidget
@@ -46,11 +49,7 @@ class MainWindow(QMainWindow):
         profile_button = QPushButton("Профиль")
         profile_button.clicked.connect(self.show_profile)
 
-        export_button = QPushButton("Экспорт в CSV")
-        export_button.clicked.connect(self.export_to_csv)
-
         buttons_layout.addWidget(profile_button)
-        buttons_layout.addWidget(export_button)
 
         # Область для карточек книг
         self.scroll_area = QScrollArea()
@@ -108,12 +107,6 @@ class MainWindow(QMainWindow):
         """Открывает виджет профиля."""
         profile_widget = ProfileWidget(self.user, self)
         self.setCentralWidget(profile_widget)
-
-    def export_to_csv(self):
-        """Экспортирует данные в CSV."""
-        file_operations = FileOperationsWidget(self.user)
-        file_operations.export_to_csv()
-        self.statusBar().showMessage("Данные экспортированы в CSV.", 5000)
 
     def load_main_interface(self, user):
         """Загружает основной интерфейс после авторизации."""
