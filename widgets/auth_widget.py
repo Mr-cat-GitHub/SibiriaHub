@@ -66,18 +66,25 @@ class AuthWidget(QWidget):
         self.setStyleSheet(self.dark_theme)
 
     def login(self):
+        """Авторизация пользователя."""
         username = self.username_input.text().strip()
         password = self.password_input.text().strip()
 
-        # Создаем сессию для текущего пользователя
-        session = create_user_session(username)
-        user = session.query(User).filter_by(username=username).first()
+        if not username or not password:
+            QMessageBox.warning(self, "Error", "Both fields are required.")
+            return
 
-        if user and check_password_hash(user.password, password):
-            QMessageBox.information(self, "Success", f"Welcome, {user.username}!")
-            self.parent.load_main_interface(user)  # Загружаем основной интерфейс
-        else:
-            QMessageBox.warning(self, "Error", "Invalid username or password")
+        try:
+            session = create_user_session(username)
+            user = session.query(User).filter_by(username=username).first()
+
+            if user and check_password_hash(user.password, password):
+                QMessageBox.information(self, "Success", f"Welcome, {user.username}!")
+                self.parent.load_main_interface(user)
+            else:
+                QMessageBox.warning(self, "Error", "Invalid username or password.")
+        except ValueError:
+            QMessageBox.warning(self, "Error", "User not found.")
 
     def register(self):
         username = self.username_input.text().strip()
@@ -99,3 +106,8 @@ class AuthWidget(QWidget):
         session.commit()
 
         QMessageBox.information(self, "Success", "Registration successful! Please login.")
+
+    def reload_user_session(self):
+        """Перезагружает текущую сессию пользователя после изменения имени."""
+        session = create_user_session(self.user.username)
+        self.user = session.query(type(self.user)).filter_by(username=self.user.username).first()
