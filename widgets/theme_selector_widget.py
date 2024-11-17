@@ -1,6 +1,5 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QHBoxLayout, QMessageBox
-from PyQt6.QtGui import QFont
 from PyQt6.QtCore import QSettings
+from PyQt6.QtWidgets import QVBoxLayout, QLabel, QPushButton, QWidget
 
 
 class ThemeSelectorWidget(QWidget):
@@ -21,12 +20,10 @@ class ThemeSelectorWidget(QWidget):
 
         # Заголовок
         title_label = QLabel("Выберите тему:")
-        title_label.setFont(QFont("Arial", 14, QFont.Weight.Bold))
-        title_label.setStyleSheet("color: #FFA726;")  # Оранжевый заголовок
         layout.addWidget(title_label)
 
         # Кнопки выбора темы
-        buttons_layout = QHBoxLayout()
+        buttons_layout = QVBoxLayout()
 
         # Тёмная тема
         dark_theme_button = QPushButton("Тёмная тема")
@@ -38,9 +35,19 @@ class ThemeSelectorWidget(QWidget):
         light_theme_button.clicked.connect(lambda: self.apply_theme("light"))
         buttons_layout.addWidget(light_theme_button)
 
+        # Светлая розовая тема
+        pink_light_button = QPushButton("Розовая светлая тема")
+        pink_light_button.clicked.connect(lambda: self.apply_theme("pink_light"))
+        buttons_layout.addWidget(pink_light_button)
+
+        # Тёмная розовая тема
+        twilight_button = QPushButton("Сумеречная ночь")
+        twilight_button.clicked.connect(lambda: self.apply_theme("twilight"))
+        buttons_layout.addWidget(twilight_button)
+
         layout.addLayout(buttons_layout)
 
-        # Кнопка возврата
+        # Кнопка "Назад"
         back_button = QPushButton("Назад")
         back_button.clicked.connect(self.go_back)
         layout.addWidget(back_button)
@@ -49,16 +56,21 @@ class ThemeSelectorWidget(QWidget):
 
     def apply_theme(self, theme):
         """Применяет выбранную тему и сохраняет её в настройках."""
-        if theme == "dark":
-            self.parent().set_dark_theme()
-            self.settings.setValue("theme", "dark")  # Сохраняем выбор темы
-            QMessageBox.information(self, "Тема", "Тёмная тема применена.")
-        elif theme == "light":
-            self.parent().set_light_theme()
-            self.settings.setValue("theme", "light")  # Сохраняем выбор темы
-            QMessageBox.information(self, "Тема", "Светлая тема применена.")
+        theme_files = {
+            "dark": "css/dark_theme.css",
+            "light": "css/light_theme.css",
+            "pink_light": "css/pink_light_theme.css",
+            "twilight": "css/twilight_theme.css",  # Проверьте путь
+        }
+
+        if theme in theme_files:
+            file_path = theme_files[theme]
+            self.parent().load_css(file_path)
+            self.settings.setValue("theme", theme)
+            print(f"Тема {theme} успешно применена.")  # Отладочный вывод
+        else:
+            print(f"Ошибка: тема {theme} не найдена.")
 
     def go_back(self):
         """Возвращает пользователя в главное окно."""
         self.parent().init_main_interface()
-        self.close()

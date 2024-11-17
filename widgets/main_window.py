@@ -1,4 +1,5 @@
 import csv
+import os
 
 from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QPushButton, QScrollArea, QHBoxLayout, QLineEdit, \
     QMessageBox, QFileDialog
@@ -148,11 +149,15 @@ class MainWindow(QMainWindow):
 
     def load_css(self, file_name):
         """Загружает файл CSS и применяет его к приложению."""
+        if not os.path.exists(file_name):
+            print(f"Ошибка: файл {file_name} не найден.")
+            return
+
         try:
             with open(file_name, "r") as file:
                 self.setStyleSheet(file.read())
-        except FileNotFoundError:
-            print(f"Ошибка: файл {file_name} не найден.")
+        except Exception as e:
+            print(f"Ошибка загрузки CSS: {e}")
 
     def open_theme_selector(self):
         """Открывает окно выбора темы."""
@@ -163,8 +168,12 @@ class MainWindow(QMainWindow):
         """Применяет сохранённую тему при запуске."""
         settings = QSettings("SibirHub", "ThemeSettings")
         saved_theme = settings.value("theme", "dark")  # По умолчанию тёмная тема
-        if saved_theme == "dark":
-            self.load_css("dark_theme.css")
-        elif saved_theme == "light":
-            self.load_css("light_theme.css")
+        theme_files = {
+            "dark": "css/dark_theme.css",
+            "light": "css/light_theme.css",
+            "pink_light": "css/pink_light_theme.css",
+            "twilight": "css/twilight_theme.css",
+        }
 
+        if saved_theme in theme_files:
+            self.load_css(theme_files[saved_theme])

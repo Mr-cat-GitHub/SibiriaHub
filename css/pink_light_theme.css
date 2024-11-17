@@ -1,0 +1,55 @@
+/* Общие стили */
+QMainWindow {
+    background-color: #FFE4E1; /* Светло-розовый фон */
+    color: #000000;
+}
+
+QWidget {
+    background-color: #FFDAB9; /* Бледно-персиковый фон для виджетов */
+    border-radius: 8px;
+    border: 1px solid #FFC0CB; /* Розовая обводка */
+    color: #000000;
+}
+
+/* Поля ввода текста */
+QLineEdit {
+    background-color: #FFFFFF;
+    border: 1px solid #FFC0CB;
+    border-radius: 5px;
+    padding: 6px;
+    color: black;
+    font-size: 14px;
+}
+
+/* Метки */
+QLabel {
+    color: #000000;
+    font-size: 14px;
+}
+
+QLabel.title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #FF69B4; /* Ярко-розовый текст заголовка */
+}
+
+/* Кнопки */
+QPushButton {
+    background-color: #FFB6C1;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    font-size: 12px;
+}
+
+QPushButton:hover {
+    background-color: #FF69B4; /* Ярко-розовый цвет при наведении */
+    color: white;
+}
+
+/* Поля для карточек */
+QScrollArea {
+    border: none;
+    background-color: #FFE4E1;
+}
