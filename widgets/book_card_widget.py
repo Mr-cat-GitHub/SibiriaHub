@@ -64,12 +64,3 @@ class BookCardWidget(QWidget):
                 session.delete(book)
                 session.commit()
                 self.parent.refresh_cards()  # Обновляем карточки после удаления
-
-    def load_stylesheet(self):
-        """Загружает СSS стиль из файла и применяет его ко всему приложению."""
-        try:
-            with open("style.сss", "r") as file:
-                stylesheet = file.read()
-                self.setStyleSheet(stylesheet)
-        except FileNotFoundError:
-            print("СSS файл не найден. Убедитесь, что style.сss находится в корневой папке.")

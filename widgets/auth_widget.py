@@ -7,8 +7,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 class AuthWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.username_input = None
+        self.password_input = None
         self.parent = parent
-        self.set_dark_theme()
         self.init_ui()
 
     def init_ui(self):
@@ -34,36 +35,6 @@ class AuthWidget(QWidget):
         layout.addWidget(register_button)
 
         self.setLayout(layout)
-
-    def set_dark_theme(self):
-        self.dark_theme = """
-            QWidget {
-                background-color: #2A2A2E;
-            }
-            QLineEdit {
-                padding: 8px;
-                border: 1px solid #444;
-                border-radius: 5px;
-                font-size: 14px;
-                background-color: #444;
-                color: white;
-            }
-            QPushButton {
-                padding: 8px 16px;
-                background-color: #3A3A3F;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                font-size: 14px;
-            }
-            QPushButton:hover {
-                background-color: #4A4A4F;
-            }
-            QLabel {
-                color: white;
-            }
-        """
-        self.setStyleSheet(self.dark_theme)
 
     def login(self):
         """Авторизация пользователя."""
