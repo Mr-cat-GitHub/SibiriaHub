@@ -1,13 +1,13 @@
 /* Общие стили */
 QMainWindow {
-    background-color: #121212; /* Тёмный фон для основного окна */
+    background-color: #121212;
     color: #FFFFFF;
 }
 
 QWidget {
-    background-color: #1E1E1E; /* Тёмный фон для виджетов */
+    background-color: #1E1E1E;
     border-radius: 8px;
-    border: 1px solid #3E3E42; /* Лёгкая обводка */
+    border: 1px solid #3E3E42;
     color: #FFFFFF;
 }
 
@@ -30,12 +30,12 @@ QLabel {
 QLabel.title {
     font-size: 16px;
     font-weight: bold;
-    color: #FFA726; /* Оранжевый текст заголовка */
+    color: #FFA726;
 }
 
 /* Кнопки */
 QPushButton {
-    background-color: #2D2D30; /* Тёмный фон кнопок */
+    background-color: #2D2D30;
     color: white;
     border: none;
     border-radius: 5px;
@@ -44,7 +44,7 @@ QPushButton {
 }
 
 QPushButton:hover {
-    background-color: #FFA726; /* Оранжевый цвет при наведении */
+    background-color: #FFA726;
     color: black;
 }
 

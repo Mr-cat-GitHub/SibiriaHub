@@ -2,20 +2,21 @@ import csv
 
 from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QPushButton, QScrollArea, QHBoxLayout, QLineEdit, \
     QMessageBox, QFileDialog
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QSettings
 from models import create_user_session, Book
 from widgets.auth_widget import AuthWidget
 from widgets.book_card_widget import BookCardWidget
 from widgets.input_form_widget import InputFormWidget
 from widgets.profile_widget import ProfileWidget
-from widgets.file_operations_widget import FileOperationsWidget
+from widgets.theme_selector_widget import ThemeSelectorWidget
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.user = None
-        self.load_stylesheet()
+        # self.load_css()
+        self.apply_saved_theme()
         self.init_auth_interface()
 
     def init_auth_interface(self):
@@ -44,12 +45,17 @@ class MainWindow(QMainWindow):
         # Кнопка для добавления книг
         self.form_widget = InputFormWidget(self)
 
-        # Кнопки профиля и экспорта
+        # Кнопки профиля и выбора темы
         buttons_layout = QHBoxLayout()
         profile_button = QPushButton("Профиль")
         profile_button.clicked.connect(self.show_profile)
 
-        buttons_layout.addWidget(profile_button)
+        theme_button = QPushButton("Тема")
+        theme_button.clicked.connect(self.open_theme_selector)
+
+        # Устанавливаем кнопкам одинаковый размер
+        buttons_layout.addWidget(profile_button, alignment=Qt.AlignmentFlag.AlignLeft)
+        buttons_layout.addWidget(theme_button, alignment=Qt.AlignmentFlag.AlignRight)
 
         # Область для карточек книг
         self.scroll_area = QScrollArea()
@@ -66,6 +72,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.container)
 
         self.load_books()
+
 
     def load_books(self):
         """Загружает книги текущего пользователя."""
@@ -105,6 +112,9 @@ class MainWindow(QMainWindow):
 
     def show_profile(self):
         """Открывает виджет профиля."""
+        if self.user is None:
+            QMessageBox.warning(self, "Ошибка", "Пользователь не авторизован.")
+            return
         profile_widget = ProfileWidget(self.user, self)
         self.setCentralWidget(profile_widget)
 
@@ -136,11 +146,25 @@ class MainWindow(QMainWindow):
         """Возвращает пользователя к основному интерфейсу."""
         self.parent.init_main_interface()  # Замените init_ui на init_main_interface
 
-    def load_stylesheet(self):
-        """Загружает CSS из файла и применяет к приложению."""
+    def load_css(self, file_name):
+        """Загружает файл CSS и применяет его к приложению."""
         try:
-            with open("style.css", "r") as file:
-                stylesheet = file.read()
-                self.setStyleSheet(stylesheet)
+            with open(file_name, "r") as file:
+                self.setStyleSheet(file.read())
         except FileNotFoundError:
-            print("CSS файл не найден.")
+            print(f"Ошибка: файл {file_name} не найден.")
+
+    def open_theme_selector(self):
+        """Открывает окно выбора темы."""
+        theme_selector = ThemeSelectorWidget(self)
+        theme_selector.show()
+
+    def apply_saved_theme(self):
+        """Применяет сохранённую тему при запуске."""
+        settings = QSettings("SibirHub", "ThemeSettings")
+        saved_theme = settings.value("theme", "dark")  # По умолчанию тёмная тема
+        if saved_theme == "dark":
+            self.load_css("dark_theme.css")
+        elif saved_theme == "light":
+            self.load_css("light_theme.css")
+
