@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox
 from models import Book, create_user_session
 
 
@@ -31,6 +31,10 @@ class InputFormWidget(QWidget):
 
     def add_or_update_book(self):
         """Добавляет новую книгу или обновляет существующую."""
+        if not self.parent or not self.parent.user:
+            QMessageBox.warning(self, "Error", "User is not authenticated.")
+            return
+
         # Создаем сессию для текущего пользователя
         session = create_user_session(self.parent.user.username)
 
@@ -39,7 +43,7 @@ class InputFormWidget(QWidget):
         year = self.year_input.text().strip()
 
         if not title or not author or not year.isdigit():
-            print("Invalid input")  # Замените на всплывающее сообщение, если необходимо
+            QMessageBox.warning(self, "Invalid Input", "All fields must be filled correctly.")
             return
 
         if self.current_book:
@@ -51,8 +55,8 @@ class InputFormWidget(QWidget):
             self.parent.refresh_cards()  # Обновление интерфейса
             self.reset_form()
         else:
-            # Добавление новой книги
-            new_book = Book(title=title, author=author, year=int(year))
+            # Добавление новой книги с привязкой к текущему пользователю
+            new_book = Book(title=title, author=author, year=int(year), user_id=self.parent.user.id)
             session.add(new_book)
             session.commit()
             self.parent.add_book_card(new_book)

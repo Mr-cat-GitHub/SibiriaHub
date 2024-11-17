@@ -14,6 +14,8 @@ class Book(Base):
     title = Column(String)
     author = Column(String)
     year = Column(Integer)
+    user_id = Column(Integer, ForeignKey('users.id'))  # Связь с таблицей пользователей
+    user = relationship("User", back_populates="books")  # Обратная связь с моделью User
 
 
 class User(Base):
@@ -23,6 +25,7 @@ class User(Base):
     username = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
     profile = relationship("Profile", back_populates="user", uselist=False)
+    books = relationship("Book", back_populates="user")  # Связь с книгами
 
 
 class Profile(Base):
