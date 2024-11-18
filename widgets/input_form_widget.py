@@ -31,31 +31,26 @@ class InputFormWidget(QWidget):
 
     def add_or_update_book(self):
         """Добавляет новую книгу или обновляет существующую."""
-        if not self.parent or not self.parent.user:
-            QMessageBox.warning(self, "Error", "User is not authenticated.")
-            return
-
-        # Создаем сессию для текущего пользователя
-        session = create_user_session(self.parent.user.username)
+        session = create_user_session(self.parent.user.username)  # Сессия для текущего пользователя
 
         title = self.title_input.text().strip()
         author = self.author_input.text().strip()
         year = self.year_input.text().strip()
 
         if not title or not author or not year.isdigit():
-            QMessageBox.warning(self, "Invalid Input", "All fields must be filled correctly.")
+            QMessageBox.warning(self, "Ошибка", "Некорректные данные!")
             return
 
-        if self.current_book:
-            # Обновление существующей книги
-            self.current_book.title = title
-            self.current_book.author = author
-            self.current_book.year = int(year)
-            session.commit()
-            self.parent.refresh_cards()  # Обновление интерфейса
-            self.reset_form()
-        else:
-            # Добавление новой книги с привязкой к текущему пользователю
+        if self.current_book:  # Если редактируем существующую книгу
+            book = session.query(Book).get(self.current_book.id)
+            if book:
+                book.title = title
+                book.author = author
+                book.year = int(year)
+                session.commit()
+                self.parent.refresh_cards()  # Обновляем карточки
+                self.reset_form()
+        else:  # Если создаём новую книгу
             new_book = Book(title=title, author=author, year=int(year), user_id=self.parent.user.id)
             session.add(new_book)
             session.commit()
@@ -77,3 +72,9 @@ class InputFormWidget(QWidget):
         self.author_input.clear()
         self.year_input.clear()
         self.add_button.setText("Add Book")
+
+    def sync_book_data(self):
+        """Обновляет данные текущей книги из базы."""
+        session = create_user_session(self.parent.user.username)
+        self.current_book = session.query(Book).get(self.current_book.id)
+
