@@ -38,7 +38,7 @@ class InputFormWidget(QWidget):
         year = self.year_input.text().strip()
 
         if not title or not author or not year.isdigit():
-            QMessageBox.warning(self, "Ошибка", "Некорректные данные!")
+            QMessageBox.warning(self, "Error", "Incorrect data")
             return
 
         if self.current_book:  # Если редактируем существующую книгу

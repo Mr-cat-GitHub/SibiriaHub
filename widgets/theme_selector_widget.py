@@ -21,7 +21,7 @@ class ThemeSelectorWidget(QWidget):
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)  # Выравнивание по верхнему краю
 
         # Заголовок
-        title_label = QLabel("Выберите тему:")
+        title_label = QLabel("Select theme:")
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title_label)
 
@@ -29,10 +29,10 @@ class ThemeSelectorWidget(QWidget):
         buttons_layout = QVBoxLayout()
 
         themes = {
-            "Тёмная тема": "dark",
-            "Светлая тема": "light",
-            "Розовая светлая тема": "pink_light",
-            "Сумеречная ночь": "twilight"
+            "Dark theme": "dark",
+            "Light theme": "light",
+            "Pink-light theme": "pink_light",
+            "Twilight theme": "twilight"
         }
 
         for label, theme_key in themes.items():
@@ -44,7 +44,7 @@ class ThemeSelectorWidget(QWidget):
         layout.addLayout(buttons_layout)
 
         # Кнопка "Назад"
-        back_button = QPushButton("Назад")
+        back_button = QPushButton("Go back")
         back_button.setFixedHeight(40)
         back_button.clicked.connect(self.go_back)
         layout.addWidget(back_button)
@@ -66,12 +66,12 @@ class ThemeSelectorWidget(QWidget):
                 self.parent().load_css(file_path)
                 self.settings.setValue("theme", theme)
                 # QMessageBox.information(self, "Тема применена", f"Тема '{theme}' успешно применена.")
-                print(f"Тема {theme} успешно применена.")  # Отладочный вывод
+                print(f"Theme {theme} successfully applied")  # Отладочный вывод
             else:
-                QMessageBox.warning(self, "Ошибка", "Родительский виджет не поддерживает загрузку CSS.")
+                QMessageBox.warning(self, "Error", "Parent widget don`t support CSS load.")
         else:
-            QMessageBox.critical(self, "Ошибка", f"Тема '{theme}' не найдена.")
-            print(f"Ошибка: тема {theme} не найдена.")
+            QMessageBox.critical(self, "Error", f"Theme '{theme}' not found.")
+            print(f"Error: theme {theme} not found")
 
     def go_back(self):
         """Возвращает пользователя в главное окно."""

@@ -38,8 +38,8 @@ class MainWindow(QMainWindow):
         # Поле поиска книг
         search_layout = QHBoxLayout()
         self.search_input = QLineEdit()
-        self.search_input.setPlaceholderText("Поиск книг по названию, автору или году")
-        search_button = QPushButton("Поиск")
+        self.search_input.setPlaceholderText("Search")
+        search_button = QPushButton("Search")
         search_button.clicked.connect(self.search_books)
         search_layout.addWidget(self.search_input)
         search_layout.addWidget(search_button)
@@ -49,10 +49,10 @@ class MainWindow(QMainWindow):
 
         # Кнопки профиля и выбора темы
         buttons_layout = QHBoxLayout()
-        profile_button = QPushButton("Профиль")
+        profile_button = QPushButton("Profile")
         profile_button.clicked.connect(self.show_profile)
 
-        theme_button = QPushButton("Тема")
+        theme_button = QPushButton("Theme")
         theme_button.clicked.connect(self.open_theme_selector)
 
         # Устанавливаем кнопкам одинаковый размер
@@ -79,7 +79,7 @@ class MainWindow(QMainWindow):
     def load_books(self):
         """Загружает книги текущего пользователя."""
         if not self.user:
-            QMessageBox.warning(self, "Ошибка", "Пользователь не авторизован.")
+            QMessageBox.warning(self, "Error")
             return
 
         session = create_user_session(self.user.username)
